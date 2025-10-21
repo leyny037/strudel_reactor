@@ -21,3 +21,13 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Ignore system and editor junk
+.vs/
+.vscode/
+.idea/
+
+# Ignore dependencies and build outputs
+node_modules/
+dist/
+build/
