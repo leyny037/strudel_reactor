@@ -1,0 +1,51 @@
+.control-panel nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.control-panel button {
+    width: 120px;
+    height: 50px;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 5px #111;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    user-select: none;
+    position: relative;
+}
+
+    /* Press animation */
+    .control-panel button:active {
+        transform: translateY(3px); /* pushes button down visually */
+        box-shadow: 0 2px #111;
+    }
+
+    /* Colors */
+    .control-panel button#play {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .control-panel button#stop {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .control-panel button#process,
+    .control-panel button#process_play {
+        background-color: #007bff;
+        color: white;
+    }
+
+    /* Glow effect using a temporary class */
+    .control-panel button.active-glow {
+        box-shadow: 0 0 15px 5px #fff;
+        filter: brightness(1.5);
+        transition: all 0.2s ease;
+    }
