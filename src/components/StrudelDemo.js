@@ -1,10 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef} from "react";
 import { StrudelSetup } from "./StrudelSetup";
 import StrudelEditor from "./StrudelEditor";
 import ControlPanel from "./ControlPanel";
 import RadioControls from "./RadioControls";
 import CanvasDisplay from "./CanvasDisplay";
-import { stranger_tune } from "../tunes";
+import { getStrangerTune, BASE_BPM } from "../tunes";
 
 export default function StrudelDemo() {
     const hasRun = useRef(false);
@@ -14,9 +14,12 @@ export default function StrudelDemo() {
         if (!hasRun.current) {
             hasRun.current = true;
             const globalEditor = initStrudel("editor", "roll");
-            document.getElementById("proc").value = stranger_tune;
+            document.getElementById("proc").value = getStrangerTune(BASE_BPM);
             SetupButtons(globalEditor, Proc);
             Proc(globalEditor);
+
+            // Expose Strudel player globally so ControlPanel can access it
+            window.strangerTunePlayer = globalEditor;
         }
     }, [initStrudel, Proc, SetupButtons]);
 
