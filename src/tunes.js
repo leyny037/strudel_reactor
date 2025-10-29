@@ -1,4 +1,7 @@
-export const stranger_tune = `setcps(140/60/4)
+export const BASE_BPM = 140;               // default BPM
+
+export const getStrangerTune = (bpm) => `
+setcps(${bpm} / 60 / 4)
 
 samples('github:algorave-dave/samples')
 samples('https://raw.githubusercontent.com/tidalcycles/Dirt-Samples/master/strudel.json')
