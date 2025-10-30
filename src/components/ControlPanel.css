@@ -60,12 +60,6 @@
     width: 100%;
 }
 
-.slider-container label {
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #fff;
-}
-
 /* Slider track */
 .slider-container input[type="range"] {
     -webkit-appearance: none;
