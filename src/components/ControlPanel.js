@@ -1,10 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ControlPanel.css";
 import { BASE_BPM, getStrangerTune } from "../tunes";
 
 export default function ControlPanel() {
     const [activeButton, setActiveButton] = useState(null);
     const [bpm, setBpm] = useState(BASE_BPM); // default BPM
+
+    // Slider fill effect
+    useEffect(() => {
+        const slider = document.querySelector("#bpm-slider");
+
+        function updateSlider() {
+            const value = slider.value;
+            const max = slider.max;
+            const percent = (value / max) * 100;
+
+            // Set CSS variable for Chrome
+            slider.style.setProperty('--percent', percent + '%');
+        }        
+        updateSlider(); // Reflect the current value
+
+        // Add event listener
+        slider.addEventListener("input", updateSlider);
+
+        // Cleanup
+        return () => slider.removeEventListener("input", updateSlider);
+    }, []);
 
     const handleClick = (id) => {
         const player = window.strangerTunePlayer;
