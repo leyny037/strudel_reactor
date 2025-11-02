@@ -80,3 +80,18 @@
     transform: rotate(360deg);
   }
 }
+
+/* Strudel editor label */
+.editor-label {
+    text-align: center;
+    margin-bottom: 14px;
+    font-family: "Orbitron", sans-serif;
+    font-size: 1.5rem;
+    color: #0ff;
+    display: block;
+}
+
+/* Editor container spacing */
+.strudel-editor {
+    margin-top: 25px; 
+}
