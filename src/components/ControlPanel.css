@@ -1,10 +1,32 @@
+/* Horizontal row: left + right columns */
+.control-panel.horizontal-row {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 60px;
+}
+
+/* Left column: buttons + sliders stacked vertically */
+.left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Right column: FX pad aligned at top */
+.right-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
 /* Button grid layout */
 .control-panel nav {
     display: flex;
     flex-wrap: wrap;
     gap: 14px;
     justify-content: center;
-    margin-top: 10px;
+    margin-top: 4px;
 }
 /* Buttons */
 .control-panel button {
@@ -51,6 +73,13 @@
     transition: all 0.2s ease;
 }
 
+.panel-title {
+    text-align: center;
+    margin-bottom: 14px;
+    font-family: "Orbitron", sans-serif;
+    color: inherit;
+}
+
 /* Slider container */
 .slider-container {
     margin-top: 25px;
@@ -67,8 +96,6 @@
     max-width: 300px;
     height: 16px;
     background: #ff00ff;
-/*    border-radius: 10px;
-    box-shadow: 0 0 10px #ff00ff inset;*/
     background: linear-gradient(to right, #ff00ff 0%, #ff00ff var(--percent, 0%), #fff var(--percent, 0%), #fff 100%);
     border-radius: 8px;
     outline: none;
@@ -94,17 +121,51 @@
     box-shadow: 0 0 20px #0ff, 0 0 10px #fff;
 }
 
-.bpm-container {
+.number-container {
     display: flex;
     flex-direction: column;
     align-items: center; /* center horizontally */
-    margin-top: 10px;
+    margin-top: 16px;
 }
 
-.bpm-container input {
-    width: 80px;
+.number-container input {
+    width: 60px;
     text-align: center;
+    padding: 4px 6px;
+    text-align: center;
+    border-radius: 6px;
 }
+
+#volume-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    max-width: 300px;
+    height: 16px;
+    background: linear-gradient( to right, #ff9900 0%, #ff9900 var(--percent, 0%), #fff var(--percent, 0%), #fff 100% );
+    border-radius: 8px;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Volume slider thumb */
+#volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 40px;
+  height: 40px;
+  background: #ff9900;
+  border: 3px solid #fff;
+  border-radius: 6px;
+  box-shadow: 0 0 20px #ff9900;
+  cursor: grab;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+#volume-slider::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 20px #ffbb33, 0 0 10px #fff;
+}
+
 
 /* Performance pad */
 .dj-pad {
@@ -164,4 +225,3 @@
     border-color: #a0f;
     box-shadow: 0 0 20px #a0f;
 }
-
