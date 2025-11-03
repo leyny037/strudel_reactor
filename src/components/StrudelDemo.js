@@ -3,7 +3,7 @@ import { StrudelSetup } from "./StrudelSetup";
 import StrudelEditor from "./StrudelEditor";
 import ControlPanel from "./ControlPanel";
 import RadioControls from "./RadioControls";
-import CanvasDisplay from "./CanvasDisplay";
+import D3Graph from "./D3Graph";
 import { getStrangerTune, BASE_BPM } from "../tunes";
 
 export default function StrudelDemo() {
@@ -24,23 +24,36 @@ export default function StrudelDemo() {
     }, [initStrudel, Proc, SetupButtons]);
 
     return (
-        <main className="container-fluid">
-            <div className="row">
-                <StrudelEditor />
-                <ControlPanel />
+        <main className="max-w-7xl mx-auto space-y-6">
+
+            {/* D3 Visualizer on top, full width */}
+            <div className="col-span-12">
+                <D3Graph />
             </div>
 
-            <div className="row mt-3">
-                <div className="col-md-8">
-                    <div id="editor" />
-                    <div id="output" />
+            <div className="grid grid-cols-12 gap-6">
+                <div className="col-span-12 md:col-span-5">
+                    <ControlPanel />
                 </div>
-                <div className="col-md-4">
+
+                <div className="col-span-12 md:col-span-7">
+                    <StrudelEditor />
+                </div>
+
+                {/* Radio / FX controls below the editor, full width */}
+                <div className="col-span-12 md:col-span-7 md:col-start-6">
                     <RadioControls />
                 </div>
             </div>
 
-            <CanvasDisplay />
+            {/* Hidden Strudel output */}
+            <div className="hidden">
+                <div id="editor" />
+                <div id="output" />
+            </div>
+            <canvas id="roll" style={{ marginTop: '10px', width: '100%' }}></canvas>;
+
         </main>
+
     );
 }
