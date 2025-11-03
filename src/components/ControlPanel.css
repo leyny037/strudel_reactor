@@ -78,6 +78,7 @@
     margin-bottom: 14px;
     font-family: "Orbitron", sans-serif;
     color: inherit;
+    font-size: 1.7rem;
 }
 
 /* Slider container */
@@ -224,4 +225,26 @@
 .pad-rev {
     border-color: #a0f;
     box-shadow: 0 0 20px #a0f;
+}
+
+/* D3 Graph container */
+.graph-container {
+    text-align: center;
+    margin: 20px auto;
+    width: 85%;
+    border-radius: 16px;
+    padding: 20px;
+    background: radial-gradient(circle at center, #0a0a0a, #1a1a1a);
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
+}
+
+svg {
+    width: 100%;
+    height: 200px;
+    display: block;
+}
+
+rect {
+    transition: height 0.1s ease, y 0.1s ease;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.15));
 }
