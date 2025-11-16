@@ -2,99 +2,97 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import "./ControlPanel.css";
 
-export default function D3Graph() {
+export default function D3Graph({
+    barCount = 50,
+    lerpSpeed = 0.1 // smaller = smoother
+} = {}) {
     const svgRef = useRef(null);
-    const [isPlaying, setIsPlaying] = useState(false);
     const animationRef = useRef(null);
-    const tRef = useRef(0);
+    const lastValuesRef = useRef(null);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     useEffect(() => {
-        const svg = d3.select(svgRef.current);
-        const width = 700;
-        const height = 200;
+        const svgEl = svgRef.current;
+        if (!svgEl) return;
 
+        const width = 700;
+        const height = 240;
+        const barGap = 2;
+        const barWidth = Math.max(2, Math.floor((width - (barCount - 1) * barGap) / barCount));
+
+        const svg = d3.select(svgEl);
         svg.selectAll("*").remove();
         svg.attr("viewBox", `0 0 ${width} ${height}`)
-           .attr("preserveAspectRatio", "xMidYMid meet");
+            .attr("preserveAspectRatio", "xMidYMid meet");
 
-        // Define rainbow gradient
-        const defs = svg.append("defs");
-        const gradient = defs.append("linearGradient")
-            .attr("id", "rainbowGradient")
-            .attr("x1", "0%")
-            .attr("x2", "100%")
-            .attr("y1", "0%")
-            .attr("y2", "0%");
-        
-        const colors = ["red", "orange", "yellow", "green", "cyan", "blue", "violet"];
-        colors.forEach((c, i) => {
-            gradient.append("stop")
-                .attr("offset", `${(i / (colors.length - 1)) * 100}%`)
-                .attr("stop-color", c);
-        });
+        // Rainbow colors
+        const colorScale = d3.scaleSequential()
+            .domain([0, barCount - 1])
+            .interpolator(d3.interpolateRainbow);
 
-        // Wave path
-        const path = svg.append("path")
-            .attr("fill", "none")
-            .attr("stroke", "url(#rainbowGradient)")
-            .attr("stroke-width", 3);
+        const colors = d3.range(barCount).map(i => colorScale(i));
 
-        const x = d3.scaleLinear().domain([0, 100]).range([0, width]);
-        const y = d3.scaleLinear().domain([-1, 1]).range([height, 0]);
+        const bars = svg.append("g").attr("class", "bars");
 
-        const line = d3.line()
-            .x(d => x(d.x))
-            .y(d => y(d.y))
-            .curve(d3.curveBasis);
+        bars.selectAll("rect")
+            .data(d3.range(barCount))
+            .enter()
+            .append("rect")
+            .attr("x", (_, i) => i * (barWidth + barGap))
+            .attr("y", height)
+            .attr("width", barWidth)
+            .attr("height", 0)
+            .attr("fill", (_, i) => colors[i])
+            .attr("rx", 3);
 
-        // Animation loop
+        // Initial heights
+        lastValuesRef.current = new Array(barCount).fill(0);
+
         const animate = () => {
-            const data = d3.range(0, 100).map(i => ({
-                x: i,
-                y: Math.sin((i / 5) + tRef.current) * Math.cos((i / 15) + tRef.current / 2)
-            }));
+            const last = lastValuesRef.current;
 
-            path.datum(data).attr("d", line);
-            tRef.current += 0.05;
+            // Generate random target heights for each bar
+            const targets = last.map(() => Math.random());
+
+            // Lerp from last value to target
+            for (let i = 0; i < barCount; i++) {
+                last[i] = last[i] + (targets[i] - last[i]) * lerpSpeed;
+            }
+
+            bars.selectAll("rect")
+                .data(last)
+                .attr("y", d => height - d * height)
+                .attr("height", d => Math.max(2, d * height));
 
             if (isPlaying) {
                 animationRef.current = requestAnimationFrame(animate);
             }
         };
 
-        // Handle button clicks from ControlPanel
-        const handleButtonClick = (e) => {
+        const handleClick = (e) => {
             const id = e.target.id;
             if (id === "play" || id === "process_play") {
-                if (!isPlaying) {
-                    setIsPlaying(true);
-                }
+                setIsPlaying(true);
             } else if (id === "stop") {
                 setIsPlaying(false);
             }
         };
 
-        document.addEventListener("click", handleButtonClick);
+        document.addEventListener("click", handleClick);
 
-        // Start / stop animation loop depending on state
-        if (isPlaying) {
-            cancelAnimationFrame(animationRef.current);
-            animationRef.current = requestAnimationFrame(animate);
-        } else {
-            cancelAnimationFrame(animationRef.current);
-        }
+        if (isPlaying) animationRef.current = requestAnimationFrame(animate);
 
         return () => {
-            document.removeEventListener("click", handleButtonClick);
+            document.removeEventListener("click", handleClick);
             cancelAnimationFrame(animationRef.current);
-            svg.selectAll("*").remove();
         };
-    }, [isPlaying]);
+    }, [isPlaying, barCount, lerpSpeed]);
 
     return (
         <div className="graph-container">
-            <h3 className="panel-title">D3 Graph</h3>
             <svg ref={svgRef}></svg>
         </div>
     );
 }
+
+
