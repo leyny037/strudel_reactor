@@ -35,13 +35,15 @@ export function StrudelSetup() {
                 await Promise.all([loadModules, registerSynthSounds(), registerSoundfonts()]);
             },
         });
-
         return globalEditor;
     };
 
     const ProcessText = () => {
         let replace = "";
-        if (document.getElementById('flexRadioDefault2').checked) replace = "_";
+        const radio = document.getElementById("radioDJ");
+        if (radio && radio.checked) {
+            replace = "_";
+        }
         return replace;
     };
 

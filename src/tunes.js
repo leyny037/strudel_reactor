@@ -1,4 +1,4 @@
-export const BASE_BPM = 140;               // default BPM
+﻿export const BASE_BPM = 140;               // default BPM
 
 export const getStrangerTune = (bpm) => `
 setcps(${bpm} / 60 / 4)
@@ -101,3 +101,93 @@ stack(
 // all(x => x.log())
 
 // @version 1.2`;
+
+
+// ----------------------------------------------------
+// New Tune - club remix style
+
+export const getHyperworldTune = (bpm) => `
+setcps(${bpm} / 60 / 4)
+
+samples('github:tidalcycles/dirt-samples')
+samples('github:switchangel/pad')
+
+//██╗  ██╗ █████╗ ███╗   ██╗    ██╗     ███████╗
+//██║  ██║██╔══██╗████╗  ██║    ██║     ██╔════╝
+//███████║███████║██╔██╗ ██║    ██║     █████╗  
+//██╔══██║██╔══██║██║╚██╗██║    ██║     ██╔══╝  
+//██║  ██║██║  ██║██║ ╚████║    ███████╗███████╗
+//╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝    ╚══════╝╚══════╝
+
+const structures = [
+  "{~}",
+  "x*4",
+  "{x ~!6 x ~ ~ x ~!3 x ~}%16",
+  "{x ~!3 x ~!3 x ~!2 x ~!2 x ~}%16",
+  "{x ~!9 x ~!5 x ~ x ~!7 x ~!3 < ~ x > ~}%16"
+]
+
+const pg = [
+  "{0.8}",
+  "0.3 0.8".fast(4),
+  "{0.3 0.8!6 0.3 0.8!2 0.3 0.8!3 0.3 1}",
+  "{0.3 0.8!3 0.3 0.8!3 0.3 0.8!2 0.3 0.8!2 0.3 0.8}%16",
+  "{0.4 1!9 0.4 1!5 0.4 1 0.4 1!7 0.4 1!3 <1 0.4 > 1}%16"
+]
+
+const beat = 3
+const energy = slider(400, 400, 5000)
+
+main_vocal:
+s("hw:2").chop(64).cut(1).loopAt(16)
+.lpf(slider(3433.9, 300, 8000))
+.gain(2.5)
+
+verse_chops:
+s("hw:1")
+.slice(16, "1|2|4|5|9|10|11|12|13".fast(4))
+.struct("x").chop(8).clip(0.5).ply(2)
+.cut(1).lpf(slider(7000, 300, 7000))
+.room(1).rfade(30)
+.postgain(pick(pg, beat)).gain(3)
+
+pad:
+note("g1".slow(2).add("<2 6 6 4>"))
+.s("swpad:1".slow(2))
+.att("0").lpf(slider(5000, 300, 5000))
+.postgain(pick(pg, beat)).gain(1).room(2)
+
+bassline:
+n(irand("<1!7 <8>>".fast(2)))
+.scale("<f2 a2 d2 e2>:minor:pentatonic")
+.sound("[gym_sythn_bass_1, square]")
+.transpose("[0, -12]")
+.struct("x*16").decay(0.3).hpf(200).room(0.5)
+.lpf(energy)
+.postgain(pick(pg, beat)).gain(0.7)
+
+drums:
+stack(
+  s("tech:5").postgain(5).pcurve(2).pdec(1)
+  .hpf(75).struct(pick(structures, beat)),
+
+  s(" [~cp]").bank("KorgDOM110").speed(1).fast(2)
+  .postgain(0.2).lpf(3000),
+
+  s("~ hh").bank("RolandTR808").room(0.2)
+  .speed(0.75).gain(0.5).fast(4),
+
+  s("breaks165").gain(0.6).loopAt(1).chop(16)
+  .fit().postgain(pick(pg, beat))
+)
+
+// @version 3.0 HyperWorld Club Remix
+`;
+
+// ----------------------------------------------------
+// Export all tunes for RadioControls
+// ----------------------------------------------------
+export const tunes = {
+    stranger: getStrangerTune,
+    hyperworld: getHyperworldTune,
+};
