@@ -24,7 +24,7 @@ export default function StrudelDemo() {
     }, [initStrudel, Proc, SetupButtons]);
 
     return (
-        <main className="max-w-7xl mx-auto space-y-6">
+        <main className="w-full space-y-6">
 
             {/* D3 Visualizer on top, full width */}
             <div className="col-span-12">
@@ -46,12 +46,37 @@ export default function StrudelDemo() {
                 </div>
             </div>
 
-            {/* Hidden Strudel output */}
-            <div className="hidden">
-                <div id="editor" />
-                <div id="output" />
+             {/*Hidden Strudel output */}
+            <div
+                id="strudel-output"
+                className="col-md-8 strudel-editor"
+                style={{
+                    marginTop: "25px",
+                    maxHeight: "50vh",
+                    overflowY: "auto",
+                    fontSize: "0.8rem",
+                    lineHeight: "1.2",
+                    textAlign: "left",
+                    padding: "10px",
+                    border: "1px solid #0ff",
+                    borderRadius: "6px",
+                    backgroundColor: "rgba(0,0,0,0.35)",
+                    width: "100%",
+                    boxSizing: "border-box"
+                }}
+            >
+                <div id="editor" style={{ textAlign: "left" }} />
+                <div
+                    id="output"
+                    style={{
+                        textAlign: "left",
+                        whiteSpace: "pre-wrap"
+                    }}
+                />
             </div>
-            <canvas id="roll" style={{ marginTop: '10px', width: '100%' }}></canvas>;
+
+
+            <canvas id="roll" className="w-full mt-2" style={{ height: "100px" }} ></canvas>
 
         </main>
 
