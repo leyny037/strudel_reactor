@@ -2,10 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import "./ControlPanel.css";
 
-export default function D3Graph({
-    barCount = 50,
-    lerpSpeed = 0.1 // smaller = smoother
-} = {}) {
+export default function D3Graph({ barCount = 50, lerpSpeed = 0.1 } = {}) {
     const svgRef = useRef(null);
     const animationRef = useRef(null);
     const lastValuesRef = useRef(null);
