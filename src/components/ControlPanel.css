@@ -150,17 +150,17 @@
 
 /* Volume slider thumb */
 #volume-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 40px;
-  height: 40px;
-  background: #ff9900;
-  border: 3px solid #fff;
-  border-radius: 6px;
-  box-shadow: 0 0 20px #ff9900;
-  cursor: grab;
-  transition: all 0.2s ease;
-  position: relative;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 40px;
+    height: 40px;
+    background: #ff9900;
+    border: 3px solid #fff;
+    border-radius: 6px;
+    box-shadow: 0 0 20px #ff9900;
+    cursor: grab;
+    transition: all 0.2s ease;
+    position: relative;
 }
 
 #volume-slider::-webkit-slider-thumb:hover {
@@ -258,4 +258,37 @@ svg {
 rect {
     transition: height 0.1s ease, y 0.1s ease;
     filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.15));
+}
+
+/* JSON buttons */
+.json-buttons {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+}
+
+.json-buttons button {
+    width: 120px;
+    height: 50px;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 14px;
+    border: none;
+    box-shadow: 0 6px #111;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    user-select: none;
+    position: relative;
+    color: white;
+}
+
+/* Press animation */
+.json-buttons button:active {
+    transform: translateY(3px);
+    box-shadow: 0 3px #111;
+}
+
+.json-buttons button#loadPreset {
+    background-color: #66ff00;
 }

@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./ControlPanel.css";
 import { BASE_BPM, getStrangerTune } from "../tunes";
+import { getAudioContext } from '@strudel/webaudio';
 
 export default function ControlPanel() {
     const [activeButton, setActiveButton] = useState(null);
     const [bpm, setBpm] = useState(BASE_BPM); // default BPM
     const [volume, setVolume] = useState(50);
+    const [currentCode, setCurrentCode] = useState(getStrangerTune(BASE_BPM));
 
     // BPM slider fill effect
     useEffect(() => {
@@ -53,15 +55,21 @@ export default function ControlPanel() {
         setActiveButton((prev) => (prev === id ? null : id));
 
         switch (id) {
-            case "play":
+            case "play": {
+                const ctx = player.audioContext || getAudioContext();
+                if (ctx.state === 'suspended') ctx.resume();
                 player.evaluate?.();
                 break;
+            }
+            case "process_play": { 
+                player.stop?.();
+                const ctx2 = player.audioContext || getAudioContext();
+                if (ctx2.state === 'suspended') ctx2.resume();
+                player.evaluate?.();
+                break;
+            }
             case "process":
                 player.stop?.();
-                break;
-            case "process_play":
-                player.stop?.();
-                player.evaluate?.();
                 break;
             default:
                 break;
@@ -69,23 +77,23 @@ export default function ControlPanel() {
     };
 
     const updateBpm = (newBpm) => {
+        setBpm(newBpm);
         const player = window.strangerTunePlayer;
         if (!player) return;
 
-        setBpm(newBpm);
-
-        // Generate updated Strudel code with new BPM
-        const newCode = getStrangerTune(newBpm);
-
-        // Update textarea (#proc) live so user sees the new BPM in editor
-        const procText = document.getElementById("proc");
-        if (procText) {
-            procText.value = newCode;
+        // Update CPS only
+        if (player.output?.setCps) {
+            player.output.setCps(newBpm / 60 / 4);
         }
 
-        // Update Strudel editor + audio
+        // Regenerate Strudel code for the new BPM
+        const newCode = getStrangerTune(newBpm);
+        setCurrentCode(newCode);
         player.setCode(newCode);
-        player.output?.setCps(newBpm / 60 / 4);
+
+        const ctx = player.audioContext;
+        if (ctx?.state === 'suspended') ctx.resume();
+        player.evaluate?.();
     };
 
     const handleVolumeChange = (e) => {
@@ -139,10 +147,13 @@ export default function ControlPanel() {
             }
         });
 
-        const newCode = getStrangerTune(bpm) + `\n// Active FX\n${fxCode}\n`;
+        const newCode = currentCode + `\n// Active FX\n${fxCode}`;
         player.setCode(newCode);
+
+        const ctx = player.audioContext;
+        if (ctx?.state === 'suspended') ctx.resume();
         player.evaluate?.();
-    }, [activeFx, bpm]);
+    }, [activeFx, currentCode]);
 
     // Allows user to trigger FX with keys 1–4
     useEffect(() => {
@@ -181,8 +192,71 @@ export default function ControlPanel() {
         updateBpm(newBpm);
     };
 
+    // Save current Strudel code to json
+    const handleSavePreset = () => {
+        const procText = document.getElementById("proc")?.value || "";
+        if (!procText) return alert("No code to save!");
+
+        const data = {
+            code: procText,
+            bpm,
+            activeFx: Array.from(activeFx),
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "strudel_preset.json";
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    // Load a Strudel json preset
+    const handleLoadPreset = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            const data = JSON.parse(evt.target.result);
+
+            // Update editor
+            const procText = document.getElementById("proc");
+            if (procText && data.code) {
+                procText.value = data.code;
+                setCurrentCode(data.code); // save loaded code
+                const player = window.strangerTunePlayer;
+                player.setCode(data.code);
+                const ctx = player.audioContext;
+                if (ctx?.state === 'suspended') ctx.resume();
+                player.evaluate?.();
+            }
+
+            // Update BPM
+            if (typeof data.bpm === "number") updateBpm(data.bpm);
+
+            // Update active FX
+            if (Array.isArray(data.activeFx)) {
+                const newFx = new Set(data.activeFx);
+                setActiveFx(newFx);
+            }
+
+            // Update Strudel player
+            const player = window.strangerTunePlayer;
+            if (player) {
+                player.setCode(data.code || "");
+                player.evaluate?.();
+            }
+            
+        };
+        reader.readAsText(file);
+
+        // Clear input for next load
+        e.target.value = null;
+    };
+
     return (
-        //<div className="col-md-4 control-panel">
         <div className="control-panel horizontal-row">
             <div className="left-column">
                 <h3 className="panel-title">Audio Controllers</h3>
@@ -284,6 +358,30 @@ export default function ControlPanel() {
                                     playerFx('reverse')}>Reverse Beat</button>
                         </div>
                     </div>
+                </div>
+
+                {/* Simple JSON buttons row */}
+                <div className="json-buttons">
+                    <button
+                        id="loadPreset"
+                        onClick={handleSavePreset}
+                    >
+                        Save Preset
+                    </button>
+
+                    <input
+                        type="file"
+                        accept="application/json"
+                        style={{ display: 'none' }}
+                        id="loadPresetInput"
+                        onChange={handleLoadPreset}
+                    />
+                    <button
+                        id="loadPreset"
+                        onClick={() => document.getElementById("loadPresetInput").click()}
+                    >
+                        Load Preset
+                    </button>
                 </div>
             </div>
         </div>
