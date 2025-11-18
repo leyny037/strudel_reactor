@@ -28,7 +28,7 @@
     justify-content: center;
     margin-top: 4px;
 }
-/* Buttons */
+/* Button style */
 .control-panel button {
     width: 120px;
     height: 50px;
@@ -43,7 +43,7 @@
     position: relative;
 }
 
-/* Press animation */
+/* Press down animation */
 .control-panel button:active {
     transform: translateY(3px); /* pushes button down visually */
     box-shadow: 0 3px #111;
@@ -122,10 +122,11 @@
     box-shadow: 0 0 20px #0ff, 0 0 10px #fff;
 }
 
+/* Numeric display under sliders */
 .number-container {
     display: flex;
     flex-direction: column;
-    align-items: center; /* center horizontally */
+    align-items: center;
     margin-top: 16px;
 }
 
@@ -137,6 +138,7 @@
     border-radius: 6px;
 }
 
+/* Volume slider */
 #volume-slider {
     -webkit-appearance: none;
     width: 100%;
@@ -183,7 +185,7 @@
     align-items: center;
 }
 
-/* 2x2 grid */
+/* 2x2 pad grid */
 .pad-grid {
     display: grid;
     grid-template-columns: repeat(2, auto);
@@ -195,6 +197,7 @@
     margin-top: 12px;
 }
 
+/* Pad button */
 .pad-btn {
     background: radial-gradient(circle at top, #333, #111);
     border: 2px solid #0ff5;
@@ -260,7 +263,7 @@ rect {
     filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.15));
 }
 
-/* JSON buttons */
+/* JSON preset buttons */
 .json-buttons {
     margin-top: 40px;
     display: flex;

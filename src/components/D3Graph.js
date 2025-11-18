@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import "./ControlPanel.css";
 
+/* D3Graph component
+barCount: number of bars to render
+lerpSpeed: how smoothly bars animate
+*/
 export default function D3Graph({ barCount = 50, lerpSpeed = 0.1 } = {}) {
     const svgRef = useRef(null);
     const animationRef = useRef(null);
@@ -12,9 +16,11 @@ export default function D3Graph({ barCount = 50, lerpSpeed = 0.1 } = {}) {
         const svgEl = svgRef.current;
         if (!svgEl) return;
 
+        // SVG dimension
         const width = 700;
         const height = 240;
         const barGap = 2;
+        //Compute width for each bar
         const barWidth = Math.max(2, Math.floor((width - (barCount - 1) * barGap) / barCount));
 
         const svg = d3.select(svgEl);
@@ -22,7 +28,7 @@ export default function D3Graph({ barCount = 50, lerpSpeed = 0.1 } = {}) {
         svg.attr("viewBox", `0 0 ${width} ${height}`)
             .attr("preserveAspectRatio", "xMidYMid meet");
 
-        // Rainbow colors
+        // Rainbow colors setup
         const colorScale = d3.scaleSequential()
             .domain([0, barCount - 1])
             .interpolator(d3.interpolateRainbow);
@@ -31,6 +37,7 @@ export default function D3Graph({ barCount = 50, lerpSpeed = 0.1 } = {}) {
 
         const bars = svg.append("g").attr("class", "bars");
 
+        // Create bars
         bars.selectAll("rect")
             .data(d3.range(barCount))
             .enter()
@@ -40,7 +47,7 @@ export default function D3Graph({ barCount = 50, lerpSpeed = 0.1 } = {}) {
             .attr("width", barWidth)
             .attr("height", 0)
             .attr("fill", (_, i) => colors[i])
-            .attr("rx", 3);
+            .attr("rx", 3); // rounded corners
 
         // Initial heights
         lastValuesRef.current = new Array(barCount).fill(0);
@@ -61,11 +68,13 @@ export default function D3Graph({ barCount = 50, lerpSpeed = 0.1 } = {}) {
                 .attr("y", d => height - d * height)
                 .attr("height", d => Math.max(2, d * height));
 
+            // Continue animation only if playing
             if (isPlaying) {
                 animationRef.current = requestAnimationFrame(animate);
             }
         };
 
+        // Listen for button clicks so the graph can start/ stop when Play/ Stop buttons pressed
         const handleClick = (e) => {
             const id = e.target.id;
             if (id === "play" || id === "process_play") {

@@ -46,7 +46,7 @@ export default function StrudelDemo() {
                 </div>
             </div>
 
-             {/*Hidden Strudel output */}
+             {/*Strudel output */}
             <div
                 id="strudel-output"
                 className="col-md-8 strudel-editor"
@@ -63,22 +63,12 @@ export default function StrudelDemo() {
                     backgroundColor: "rgba(0,0,0,0.35)",
                     width: "100%",
                     boxSizing: "border-box"
-                }}
-            >
+                }}>
                 <div id="editor" style={{ textAlign: "left" }} />
-                <div
-                    id="output"
-                    style={{
-                        textAlign: "left",
-                        whiteSpace: "pre-wrap"
-                    }}
-                />
+                <div id="output" style={{ textAlign: "left" }} />
             </div>
 
-
             <canvas id="roll" className="w-full mt-2" style={{ height: "100px" }} ></canvas>
-
         </main>
-
     );
 }

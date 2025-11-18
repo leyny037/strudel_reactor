@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { StrudelSetup } from "./StrudelSetup";
 import { tunes } from "../tunes";
 
@@ -18,10 +17,6 @@ export default function RadioControls() {
             globalEditor.evaluate();
         }
     };
-
-    useEffect(() => {
-        // could later expand to support more tune presets
-    }, []);
 
     return (
         <div className="dj-radio-group" style={{ marginTop: "10px" }}>

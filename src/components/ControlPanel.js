@@ -4,12 +4,12 @@ import { BASE_BPM, getStrangerTune } from "../tunes";
 import { getAudioContext } from '@strudel/webaudio';
 
 export default function ControlPanel() {
-    const [activeButton, setActiveButton] = useState(null);
-    const [bpm, setBpm] = useState(BASE_BPM); // default BPM
+    const [activeButton, setActiveButton] = useState(null); // UI state for button effects
+    const [bpm, setBpm] = useState(BASE_BPM);               // default BPM
     const [volume, setVolume] = useState(50);
     const [currentCode, setCurrentCode] = useState(getStrangerTune(BASE_BPM));
 
-    // BPM slider fill effect
+    // Updates slider fill effect
     useEffect(() => {
         const slider = document.querySelector("#bpm-slider");
 
@@ -18,7 +18,7 @@ export default function ControlPanel() {
             const max = slider.max;
             const percent = (value / max) * 100;
 
-            // Set CSS variable for Chrome
+            // Set CSS variable for controlling the gradient fill
             slider.style.setProperty('--percent', percent + '%');
         }        
         updateSlider(); // Reflect the current value
@@ -43,6 +43,7 @@ export default function ControlPanel() {
         }
     }, [volume]);
 
+    // Handle Play/ Stop/ Process
     const handleClick = (id) => {
         const player = window.strangerTunePlayer;
         if (!player) return;
@@ -54,18 +55,19 @@ export default function ControlPanel() {
         }
         setActiveButton((prev) => (prev === id ? null : id));
 
+        // Different button actions
         switch (id) {
             case "play": {
                 const ctx = player.audioContext || getAudioContext();
                 if (ctx.state === 'suspended') ctx.resume();
-                player.evaluate?.();
+                player.evaluate?.();  // play code
                 break;
             }
             case "process_play": { 
-                player.stop?.();
+                player.stop?.();     // reprocess first
                 const ctx2 = player.audioContext || getAudioContext();
                 if (ctx2.state === 'suspended') ctx2.resume();
-                player.evaluate?.();
+                player.evaluate?.(); // play after processing
                 break;
             }
             case "process":
@@ -76,6 +78,7 @@ export default function ControlPanel() {
         }
     };
 
+    // Update BPM
     const updateBpm = (newBpm) => {
         setBpm(newBpm);
         const player = window.strangerTunePlayer;
@@ -86,7 +89,7 @@ export default function ControlPanel() {
             player.output.setCps(newBpm / 60 / 4);
         }
 
-        // Regenerate Strudel code for the new BPM
+        // Generate new tune based on new BPM
         const newCode = getStrangerTune(newBpm);
         setCurrentCode(newCode);
         player.setCode(newCode);
@@ -96,11 +99,12 @@ export default function ControlPanel() {
         player.evaluate?.();
     };
 
+    // Volume
     const handleVolumeChange = (e) => {
         const newVol = parseInt(e.target.value, 10);
         setVolume(newVol);
 
-        // Update volune slider fill
+        // Update volume slider fill
         const slider = e.target;
         const percent = ((newVol - slider.min) / (slider.max - slider.min)) * 100;
         slider.style.setProperty("--percent", `${percent}%`);
@@ -109,6 +113,7 @@ export default function ControlPanel() {
     // Live FX toggle system
     const [activeFx, setActiveFx] = useState(new Set());
 
+    // Toggle FX and rebuild strudel code
     const playerFx = useCallback((type) => {
         const player = window.strangerTunePlayer;
         if (!player) return;
@@ -178,7 +183,7 @@ export default function ControlPanel() {
         return () => window.removeEventListener("keydown", handleFxHotkeys);
     }, [playerFx]);
 
-
+    // BPM input handling
     const handleSliderChange = (e) => {
         const newBpm = parseInt(e.target.value, 10);
         updateBpm(newBpm);
@@ -203,6 +208,7 @@ export default function ControlPanel() {
             activeFx: Array.from(activeFx),
         };
 
+        // Prepare json file download
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -217,11 +223,12 @@ export default function ControlPanel() {
         const file = e.target.files[0];
         if (!file) return;
 
+        // Read file and apply preset
         const reader = new FileReader();
         reader.onload = (evt) => {
             const data = JSON.parse(evt.target.result);
 
-            // Update editor
+            // Update editor text
             const procText = document.getElementById("proc");
             if (procText && data.code) {
                 procText.value = data.code;
@@ -256,10 +263,13 @@ export default function ControlPanel() {
         e.target.value = null;
     };
 
+    // Render UI
     return (
         <div className="control-panel horizontal-row">
+            {/* Left column: buttons bpm, volume */}
             <div className="left-column">
                 <h3 className="panel-title">Audio Controllers</h3>
+                {/* Start/Stop/Process buttons */}
                 <nav>
                     <button
                         id="process"
@@ -290,7 +300,7 @@ export default function ControlPanel() {
                         Stop
                     </button>
                 </nav>
-
+                {/* BPM slider + input */}
                 <div className="slider-container">
                     <h3 className="panel-title">Tempo</h3>
                     <input
@@ -314,7 +324,7 @@ export default function ControlPanel() {
                         />
                     </div>
                 </div>
-
+                {/* Volume slider */}
                 <div className="slider-container">
                     <h3 className="panel-title">Volume</h3>
                     <input
@@ -338,7 +348,7 @@ export default function ControlPanel() {
                     </div>
                 </div>
             </div>
-
+            {/* Right column: FX pad + load & save JSON */}
             <div className="right-column">
                 <div className="dj-pad">
                     <h3>Live FX Pad</h3>
@@ -360,7 +370,7 @@ export default function ControlPanel() {
                     </div>
                 </div>
 
-                {/* Simple JSON buttons row */}
+                {/* Save & load preset buttons */}
                 <div className="json-buttons">
                     <button
                         id="loadPreset"
